@@ -1,7 +1,8 @@
+import random
 import tkinter as tk
 from tank import *
 from PIL import Image, ImageTk
-from noise import pnoise1
+from noise import pnoise1, pnoise2
 from game_state import *
 
 def map_value(value, leftMin, leftMax, rightMin, rightMax):
@@ -28,8 +29,8 @@ class ScorchedEarth:
 	def setup_game(self):
 		terrain_image = self.generate_terrain()
 		self.draw_terrain(terrain_image)
-		tank1 = self.spawn_tank(300, "red")
-		tank2 = self.spawn_tank(500, "purple")
+		tank1 = self.spawn_tank(100, "red")
+		tank2 = self.spawn_tank(2*WORLD_WIDTH - 100, "purple")
 		self.tanks.append(tank1)
 		self.tanks.append(tank2)
 		for tank in self.tanks:
@@ -37,14 +38,26 @@ class ScorchedEarth:
 
 	def generate_terrain(self):
 		terrain = Image.new("RGB", (WORLD_WIDTH, WORLD_HEIGHT))
+		seed = random.randint(0, 10000)  # Add randomness with a seed
 
 		for x in range(WORLD_WIDTH):
-			altitude = map_value(pnoise1(x * NOISE_SCALE, octaves=6), 0, 1, 0.2 * WORLD_HEIGHT,
-								 0.8 * WORLD_HEIGHT)
+			altitude = 0
+			amplitude = 1
+			frequency = NOISE_SCALE
+			# Layer multiple frequencies of noise
+			for _ in range(5):  # 5 layers of noise
+				altitude += amplitude * pnoise1(x * frequency + seed)
+				amplitude *= 0.5
+				frequency *= 2
+			altitude = map_value(altitude, -1, 1, MIN_ALTITUDE,MAX_ALTITUDE)
 			for y in range(WORLD_HEIGHT):
 				if y > altitude:
 					terrain.putpixel((x, y), TERRAIN_COLOR)
-
+		# for x in range(WORLD_WIDTH):
+		# 	altitude = map_value(pnoise1(x * NOISE_SCALE, octaves=OCTAVES), 0, 1, MIN_ALTITUDE,MAX_ALTITUDE)
+		# 	for y in range(WORLD_HEIGHT):
+		# 		if y > altitude:
+		# 			terrain.putpixel((x, y), TERRAIN_COLOR)
 		terrain.save("terrain.png")
 		return terrain
 
@@ -58,19 +71,22 @@ class ScorchedEarth:
 		self.canvas.create_image(0, 0, anchor=tk.NW, image=self.terrain_tk_image, tags="terrain")
 
 	def spawn_tank(self, spawn_x, color):
-		noise_value = pnoise1(spawn_x * NOISE_SCALE, octaves=6)
-		altitude = int(map_value(noise_value, 0, 1, 0.2 * WORLD_HEIGHT, 0.8 * WORLD_HEIGHT)) + 100
-		print(int(altitude + TANK_SIZE // 2))
-		# Clear terrain area for the tank
+		# Find the exact altitude for the tank's base at the given spawn_x
+		noise_value = pnoise1(spawn_x * NOISE_SCALE, octaves=OCTAVES)
 
-		for x in range(spawn_x - TANK_SIZE, spawn_x + TANK_SIZE):
-			depth = TANK_SIZE
-			for y in range(WORLD_HEIGHT,altitude,-1):
-				if self.terrain_image.getpixel((x, y)) != TERRAIN_COLOR:
+		base_altitude  = int(map_value(noise_value, 0, 1, MIN_ALTITUDE, MAX_ALTITUDE))
+
+		# altitude = 0
+		while self.terrain_image.getpixel((spawn_x, base_altitude)) != TERRAIN_COLOR:
+			base_altitude += 1  # The y-coordinate just above the terrain
+		tank_y_position = int(base_altitude) - (TANK_SIZE // 2)
+		for x in range(spawn_x - TANK_SIZE // 2, spawn_x + TANK_SIZE // 2):
+			for y in range(tank_y_position, int(base_altitude)):
+				if 0 <= x < self.terrain_image.width and 0 <= y < self.terrain_image.height:
 					self.terrain_image.putpixel((x, y), TERRAIN_COLOR)  # Clear the space for the tank
 
 		self.draw_terrain(self.terrain_image)
-		return Tank(Pos(spawn_x, altitude), color, self.canvas)
+		return Tank(Pos(spawn_x, tank_y_position), color, self.canvas)
 
 if __name__ == "__main__":
 	root = tk.Tk()
