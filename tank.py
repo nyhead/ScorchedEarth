@@ -1,6 +1,6 @@
 import math
 from game_state import *
-
+import projectile
 
 
 class Tank:
@@ -15,6 +15,7 @@ class Tank:
 		self.turret = None
 		self.turret_base = Pos(self.pos.x, self.pos.y - TANK_SIZE/2)
 		self.turret_end = Pos(*rotate(self.turret_base.x,self.turret_base.y, self.angle,self.turret_length))
+		self.power = 20
 	def draw(self):
 		if self.id:
 			self.canvas.delete(self.id)
@@ -40,3 +41,9 @@ class Tank:
 	def update_turret(self):
 		self.turret_end = Pos(*rotate(self.turret_base.x,self.turret_base.y, self.angle,self.turret_length))
 		self.canvas.coords(self.turret, self.turret_base.x, self.turret_base.y, self.turret_end.x, self.turret_end.y)
+	def fire_projectile(self):
+		velx = self.power * math.cos(math.radians(self.angle))
+		vely = -self.power * math.sin(math.radians(self.angle))
+		p = projectile.Projectile(Pos(self.turret_end.x, self.turret_end.y-TANK_SIZE) , Pos(velx, vely), self.color, 20, self.canvas)
+		p.draw()
+		p.animate_projectile()

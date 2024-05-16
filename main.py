@@ -101,7 +101,7 @@ class ScorchedEarth:
 		self.tanks[self.current_player].rotate_turret(5)
 		# self.end_turn()
 	def fire_projectile(self):
-		# self.tanks[self.current_player].fire_projectile()
+		self.tanks[self.current_player].fire_projectile()
 		self.end_turn()
 	def end_turn(self):
 		self.current_player = (self.current_player + 1) % len(self.tanks)
