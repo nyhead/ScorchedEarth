@@ -36,6 +36,12 @@ class ScorchedEarth:
 		for tank in self.tanks:
 			tank.draw()
 
+		self.root.bind('<Left>', lambda event: tank1.set_angle(-5))
+		self.root.bind('<Right>', lambda event: tank1.set_angle(5))
+
+		self.root.bind('<a>', lambda event: tank2.set_angle(-5))
+		self.root.bind('<d>', lambda event: tank2.set_angle(5))
+
 	def generate_terrain(self):
 		terrain = Image.new("RGB", (WORLD_WIDTH, WORLD_HEIGHT))
 		seed = random.randint(0, 10000)  # Add randomness with a seed

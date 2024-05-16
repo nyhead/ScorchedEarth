@@ -9,34 +9,44 @@ class Pos:
 		self.y = y
 
 class Tank:
-	def __init__(self, pos: Pos, color, canvas):
+	def __init__(self, pos: Pos, color, canvas,angle=45):
 		self.canvas = canvas
 		self.pos = pos
 		self.color = color
 		self.size = TANK_SIZE
+		self.angle = angle
+		self.turret_length = 12
+		self.turret_base = pos
 		self.id = None
+		self.turret = None
 
-	def rotate(self, angle_degrees, length, x, y):
-		angle_radians = angle_degrees * math.pi / 180
-		endx = x + length * math.cos(angle_radians)
-		endy = y + length * math.sin(angle_radians)
+	def rotate(self):
+		angle_radians = self.angle * math.pi / 180
+		endx = self.turret_base.x + self.turret_length * math.cos(angle_radians)
+		endy = self.turret_base.y - self.turret_length * math.sin(angle_radians)
 		return endx, endy
 
 	def draw(self):
 		if self.id:
 			self.canvas.delete(self.id)
+		if self.turret:
+			self.canvas.delete(self.turret)
 		x1 = self.pos.x - self.size
 		y1 = self.pos.y - self.size / 2
 		x2 = self.pos.x + self.size
 		y2 = self.pos.y + self.size / 2
 		#rotating a line, aiming
-		#in Tkinter's coordinate system:
-		#Increasing the y-coordinate actually moves down the screen,
-		# which effectively reverses the direction of the positive y-axis compared to the
-		# standard Cartesian coordinate system.
-		x,y = self.pos.x, self.pos.y
-		angle = 60
-		endx, endy = self.rotate(360-angle, 12, x, y)  # Assuming length is 100
-		self.canvas.create_line(x, y, endx, endy, fill=self.color, width=3)
+		endx, endy = self.rotate()
+		self.turret = self.canvas.create_line(self.turret_base.x, self.turret_base.y, endx, endy, fill=self.color, width=3)
 
 		self.id = self.canvas.create_rectangle(x1, y1, x2, y2, fill=self.color)
+
+
+	def set_angle(self, angle):
+		self.angle -= angle
+		self.update_turret()
+
+
+	def update_turret(self):
+		endx,endy=self.rotate()
+		self.canvas.coords(self.turret, self.turret_base.x, self.turret_base.y, endx, endy)
