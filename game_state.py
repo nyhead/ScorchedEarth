@@ -11,6 +11,7 @@ GRAVITY = (0, 0.2)
 TERRAIN_COLOR = (30, 180, 60)
 MIN_ALTITUDE = .4 * WORLD_HEIGHT
 MAX_ALTITUDE = .8 * WORLD_HEIGHT
+
 # Enums for game state and projectile type
 class State:
     AIM = 1
