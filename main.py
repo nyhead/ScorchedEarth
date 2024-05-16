@@ -94,11 +94,11 @@ class ScorchedEarth:
 		return Tank(Pos(spawn_x, tank_y_position), color, self.canvas)
 
 	def move_turret_left(self):
-		self.tanks[self.current_player].rotate_turret(-100)
+		self.tanks[self.current_player].rotate_turret(-5)
 		# self.end_turn()
 
 	def move_turret_right(self):
-		self.tanks[self.current_player].rotate_turret(100)
+		self.tanks[self.current_player].rotate_turret(5)
 		# self.end_turn()
 	def fire_projectile(self):
 		# self.tanks[self.current_player].fire_projectile()
