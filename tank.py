@@ -45,5 +45,5 @@ class Tank:
 		velx = self.power * math.cos(math.radians(self.angle))
 		vely = -self.power * math.sin(math.radians(self.angle))
 		p = projectile.Projectile(Pos(self.turret_end.x, self.turret_end.y-TANK_SIZE) , Pos(velx, vely), self.color, 20, self.canvas)
-		p.draw()
-		p.animate_projectile()
+		# p.draw()
+		# p.animate_projectile()
