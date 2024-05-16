@@ -42,7 +42,7 @@ class Tank:
 		self.id = self.canvas.create_rectangle(x1, y1, x2, y2, fill=self.color)
 
 
-	def set_angle(self, angle):
+	def rotate_turret(self, angle):
 		self.angle -= angle
 		self.update_turret()
 

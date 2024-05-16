@@ -24,6 +24,7 @@ class ScorchedEarth:
 		self.canvas = tk.Canvas(root, width=WIDTH, height=HEIGHT, bg='sky blue')
 		self.canvas.pack()
 		self.terrain_tk_image = None  # Keep a reference to the PhotoImage object
+		self.current_player = 0
 		self.setup_game()
 
 	def setup_game(self):
@@ -36,11 +37,9 @@ class ScorchedEarth:
 		for tank in self.tanks:
 			tank.draw()
 
-		self.root.bind('<Left>', lambda event: tank1.set_angle(-5))
-		self.root.bind('<Right>', lambda event: tank1.set_angle(5))
-
-		self.root.bind('<a>', lambda event: tank2.set_angle(-5))
-		self.root.bind('<d>', lambda event: tank2.set_angle(5))
+		self.root.bind('<Left>', lambda event: self.move_turret_left())
+		self.root.bind('<Right>', lambda event: self.move_turret_right())
+		self.root.bind('<space>', lambda event: self.fire_projectile())
 
 	def generate_terrain(self):
 		terrain = Image.new("RGB", (WORLD_WIDTH, WORLD_HEIGHT))
@@ -93,6 +92,20 @@ class ScorchedEarth:
 
 		self.draw_terrain(self.terrain_image)
 		return Tank(Pos(spawn_x, tank_y_position), color, self.canvas)
+
+	def move_turret_left(self):
+		self.tanks[self.current_player].rotate_turret(-100)
+		# self.end_turn()
+
+	def move_turret_right(self):
+		self.tanks[self.current_player].rotate_turret(100)
+		# self.end_turn()
+	def fire_projectile(self):
+		# self.tanks[self.current_player].fire_projectile()
+		self.end_turn()
+	def end_turn(self):
+		self.current_player = (self.current_player + 1) % len(self.tanks)
+
 
 if __name__ == "__main__":
 	root = tk.Tk()
