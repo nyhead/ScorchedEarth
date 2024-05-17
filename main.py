@@ -130,12 +130,22 @@ class ScorchedEarth:
 						   projectile.pos.x + projectile.ball_size, projectile.pos.y + projectile.ball_size)
 
 		# Schedule the next update
-		if not self.check_collision(projectile):
-			self.canvas.after(int(time_interval * 100), self.animate_projectile, projectile)
-		else:
+
+		if not (0 <= projectile.pos.x <= (WORLD_WIDTH * SCALE_FACTOR) and 0 <= projectile.pos.y <= (WORLD_HEIGHT * SCALE_FACTOR)):
+			projectile.vel.x *= projectile.vel.x
+			projectile.vel.y *= projectile.vel.y
+			self.animate_projectile(projectile)
+		elif self.check_collision(projectile):
 			self.create_crater(projectile.pos.x,projectile.pos.y, projectile.explosion_radius)
 			self.canvas.delete(projectile.projectile)
 			self.end_turn()
+		else:
+			self.canvas.after(int(time_interval * 100), self.animate_projectile, projectile)
+	# def fire_projectile(self, pos):
+	# 	velx = -self.tanks[self.current_player].power * math.cos(math.radians(self.tanks[self.current_player].angle))
+	# 	vely = self.tanks[self.current_player].power * math.sin(math.radians(self.tanks[self.current_player].angle))
+	# 	p = projectile.Projectile(Pos(self.tanks[self.current_player].turret_end.x, self.tanks[self.current_player].turret_end.y-TANK_SIZE) , Pos(velx, vely), self.tanks[self.current_player].color, 20, self.canvas)
+	# 	self.animate_projectile(p)
 
 	def check_collision(self, projectile):
 		if	self.terrain_image.getpixel((projectile.pos.x, projectile.pos.y)) == TERRAIN_COLOR:
