@@ -111,7 +111,7 @@ class ScorchedEarth:
 		vely = -self.tanks[self.current_player].power * math.sin(math.radians(self.tanks[self.current_player].angle))
 		p = projectile.Projectile(Pos(self.tanks[self.current_player].turret_end.x, self.tanks[self.current_player].turret_end.y-TANK_SIZE) , Pos(velx, vely), self.tanks[self.current_player].color, 20, self.canvas)
 		self.animate_projectile(p)
-		self.end_turn()
+
 	def animate_projectile(self, projectile):
 		gravity = .98  # Acceleration due to gravity
 		time_interval = 0.05  # Time step for the simulation
@@ -133,8 +133,9 @@ class ScorchedEarth:
 		if not self.check_collision(projectile):
 			self.canvas.after(int(time_interval * 100), self.animate_projectile, projectile)
 		else:
-			self.canvas.delete(projectile.projectile)
 			self.create_crater(projectile.pos.x,projectile.pos.y, projectile.explosion_radius)
+			self.canvas.delete(projectile.projectile)
+			self.end_turn()
 
 	def check_collision(self, projectile):
 		if	self.terrain_image.getpixel((projectile.pos.x, projectile.pos.y)) == TERRAIN_COLOR:
