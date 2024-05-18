@@ -132,8 +132,8 @@ class ScorchedEarth:
 		# Schedule the next update
 
 		if not (0 <= projectile.pos.x <= (WORLD_WIDTH * SCALE_FACTOR) and 0 <= projectile.pos.y <= (WORLD_HEIGHT * SCALE_FACTOR)):
-			projectile.vel.x *= projectile.vel.x
-			projectile.vel.y *= projectile.vel.y
+			projectile.vel.x *= -1
+			# projectile.vel.y += gravity * time_interval
 			self.animate_projectile(projectile)
 		elif self.check_collision(projectile):
 			self.create_crater(projectile.pos.x,projectile.pos.y, projectile.explosion_radius)
