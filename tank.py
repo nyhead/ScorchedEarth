@@ -15,7 +15,7 @@ class Tank:
 		self.turret = None
 		self.turret_base = Pos(self.pos.x, self.pos.y - TANK_SIZE/2)
 		self.turret_end = Pos(*rotate(self.turret_base.x,self.turret_base.y, self.angle,self.turret_length))
-		self.power = 30
+		self.power = 60
 	def draw(self):
 		if self.id:
 			self.canvas.delete(self.id)
@@ -37,6 +37,15 @@ class Tank:
 			self.angle -= angle
 			self.update_turret()
 
+	def update_tank(self,tank_pos):
+		self.pos = tank_pos
+		self.turret_base = Pos(self.pos.x, self.pos.y - TANK_SIZE / 2)
+		self.update_turret()
+		x1 = self.pos.x - self.size
+		y1 = self.pos.y - self.size / 2
+		x2 = self.pos.x + self.size
+		y2 = self.pos.y + self.size / 2
+		self.canvas.coords(x1, y1, x2, y2)
 
 	def update_turret(self):
 		self.turret_end = Pos(*rotate(self.turret_base.x,self.turret_base.y, self.angle,self.turret_length))
