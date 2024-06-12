@@ -1,5 +1,6 @@
 import random
 import time
+import tkinter
 import tkinter as tk
 from tkinter import NW
 
@@ -23,15 +24,51 @@ def map_value(value, leftMin, leftMax, rightMin, rightMax):
 class ScorchedEarth:
 	def __init__(self, root):
 		self.tanks = []
+		self.num_tanks = 2
 		self.root = root
+		self.root = root
+		self.root.geometry(f"{WIDTH}x{HEIGHT}")  # Set the size of the root window to match the canvas size
+
 		self.canvas = tk.Canvas(root, width=WIDTH, height=HEIGHT)
 		self.canvas.pack()
 		self.terrain_tk_image = None  # Keep a reference to the PhotoImage object
 		self.current_player = 0
-		self.setup_game()
-		self.delta_seconds = time.time()
 
-	def setup_game(self):
+		self.scale_widget = None
+		# Create Play button
+		self.button_frame = tk.Frame(root)
+		self.button_frame.place(relx=0.5, rely=0.5, anchor='center')  # Center the frame
+
+		# Create Play button with custom size
+		self.play_button = tk.Button(self.button_frame, text="Play", command=self.start_game, width=20, height=2)
+		self.play_button.grid(row=0, column=0, padx=10, pady=10)
+
+		# Create Hall of Fame button with custom size
+		self.hall_of_fame_button = tk.Button(self.button_frame, text="Hall of Fame", command=self.show_hall_of_fame, width=20,
+									 height=2)
+		self.hall_of_fame_button.grid(row=1, column=0, padx=10, pady=10)
+		self.scale_widget = tk.Scale(self.button_frame, from_=2, to=5, orient=tk.HORIZONTAL, command=self.set_num_tanks)
+		self.scale_widget.set(self.num_tanks)  # Set initial value
+		self.scale_widget.grid(row=2, column=0, padx=10, pady=10)  # Center the slider
+		# Hide the canvas initially
+		self.canvas.pack_forget()
+
+	def show_hall_of_fame(self): pass
+
+
+	def set_num_tanks(self, value):
+		# Update the number of tanks based on the slider's value
+		self.num_tanks = int(value)
+
+	def start_game(self):
+		self.scale_widget.destroy()
+		self.scale_widget = None
+		self.button_frame.destroy()
+		# Show the canvas and call setup_game with the selected number of tanks
+		self.canvas.pack()
+		self.setup_game(num_tanks=self.num_tanks)
+	def setup_game(self,num_tanks):
+		print("num_tanks", num_tanks)
 		self.terrain_image = self.generate_terrain()
 		self.draw_terrain()
 		tank1 = self.spawn_tank(100, "red")
