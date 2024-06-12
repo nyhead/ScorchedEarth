@@ -140,7 +140,8 @@ class ScorchedEarth:
 		self.tanks[self.current_player].rotate_turret(5)
 		# self.end_turn()
 	def end_turn(self):
-		self.current_player = (self.current_player + 1) % len(self.tanks)
+		if len(self.tanks) > 0:
+			self.current_player = (self.current_player + 1) % len(self.tanks)
 
 	def fire_projectile(self):
 		velx = self.tanks[self.current_player].power * math.cos(math.radians(self.tanks[self.current_player].angle))
@@ -201,16 +202,25 @@ class ScorchedEarth:
 		draw = ImageDraw.Draw(self.terrain_image)
 		# Draw a filled circle to simulate the crater, filling it with sky color (assuming sky color is blue)
 		draw.ellipse((x - radius, y - radius, x + radius, y + radius), fill=(135, 206, 235))  # Assuming sky blue color
+
+		for tank in self.tanks:
+			if x - radius <= tank.pos.x <= x + radius:
+				tank.lives -= 1
+			if tank.lives == 0:
+				self.tanks.remove(tank)
+
 		self.update_canvas()
 
 		for tank in self.tanks:
 			self.drop_tanks(tank)
-
 	def drop_tanks(self, tank):
 			# tank.draw()
 			x = tank.pos.x
 			y = tank.pos.y + 1
-			if self.terrain_image.getpixel((x, y)) != TERRAIN_COLOR:
+			if y == HEIGHT:
+				tank.lives = 0
+				self.tanks.remove(tank)
+			elif self.terrain_image.getpixel((x, y)) != TERRAIN_COLOR:
 				tank.update_tank(Pos(x,y))
 				self.canvas.after(int(.05 * 100), self.drop_tanks, tank)
 
