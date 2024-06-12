@@ -50,6 +50,8 @@ class ScorchedEarth:
 		self.scale_widget = tk.Scale(self.button_frame, from_=2, to=5, orient=tk.HORIZONTAL, command=self.set_num_tanks)
 		self.scale_widget.set(self.num_tanks)  # Set initial value
 		self.scale_widget.grid(row=2, column=0, padx=10, pady=10)  # Center the slider
+
+		self.trajectory_points = []
 		# Hide the canvas initially
 		self.canvas.pack_forget()
 
@@ -139,11 +141,15 @@ class ScorchedEarth:
 		# self.end_turn()
 	def end_turn(self):
 		self.current_player = (self.current_player + 1) % len(self.tanks)
+
 	def fire_projectile(self):
 		velx = self.tanks[self.current_player].power * math.cos(math.radians(self.tanks[self.current_player].angle))
 		vely = -self.tanks[self.current_player].power * math.sin(math.radians(self.tanks[self.current_player].angle))
-		p = projectile.Projectile(Pos(self.tanks[self.current_player].turret_end.x, self.tanks[self.current_player].turret_end.y-TANK_SIZE) , Pos(velx, vely), self.tanks[self.current_player].color, 60, self.canvas)
+		p = projectile.Projectile(
+			Pos(self.tanks[self.current_player].turret_end.x, self.tanks[self.current_player].turret_end.y - TANK_SIZE),
+			Pos(velx, vely), self.tanks[self.current_player].color, 60, self.canvas)
 		self.prev_seconds = time.time()
+		self.trajectory_points = [(p.pos.x, p.pos.y)]  # Initialize the trajectory points list
 		self.animate_projectile(p)
 
 	def animate_projectile(self, projectile):
@@ -158,32 +164,29 @@ class ScorchedEarth:
 
 		# Update vertical velocity
 		projectile.vel.y += gravity * time_interval
-		# new_time = time.time()
-		# delta_time = self.prev_seconds - new_time
-		# delta_time = -delta_time
-		# self.prev_seconds = new_time
-		# projectile.vel.y += gravity * delta_time
-		# projectile.pos.x += projectile.vel.x * delta_time
-		#
-		# projectile.pos.y += projectile.vel.y * delta_time
 
 		# Update projectile position on canvas
-		self.canvas.coords(projectile.projectile, projectile.pos.x - projectile.ball_size, projectile.pos.y - projectile.ball_size,
+		self.canvas.coords(projectile.projectile, projectile.pos.x - projectile.ball_size,
+						   projectile.pos.y - projectile.ball_size,
 						   projectile.pos.x + projectile.ball_size, projectile.pos.y + projectile.ball_size)
 
-		# Schedule the next update
-		# print(delta_time)
-		if not (0 <= projectile.pos.x <= (WORLD_WIDTH * SCALE_FACTOR) and 0 <= projectile.pos.y <= (WORLD_HEIGHT * SCALE_FACTOR)):
+		# Append the new position to the trajectory points list
+		self.trajectory_points.append((projectile.pos.x, projectile.pos.y))
+		# Draw the trajectory line
+		if len(self.trajectory_points) > 1:
+			self.canvas.create_line(self.trajectory_points[-2], self.trajectory_points[-1], fill=projectile.color,
+									width=2)
+
+		if not (0 <= projectile.pos.x <= (WORLD_WIDTH * SCALE_FACTOR) and 0 <= projectile.pos.y <= (
+				WORLD_HEIGHT * SCALE_FACTOR)):
 			projectile.vel.x *= -1
-			# projectile.vel.y += gravity * time_interval
 			self.animate_projectile(projectile)
 		elif self.check_collision(projectile):
-			self.create_crater(projectile.pos.x,projectile.pos.y, projectile.explosion_radius)
+			self.create_crater(projectile.pos.x, projectile.pos.y, projectile.explosion_radius)
 			self.canvas.delete(projectile.projectile)
-
 			self.end_turn()
 		else:
-			self.canvas.after(int(time_interval*100), self.animate_projectile, projectile)
+			self.canvas.after(int(time_interval * 100), self.animate_projectile, projectile)
 
 
 	def check_collision(self, projectile):
