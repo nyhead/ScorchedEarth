@@ -105,7 +105,7 @@ class ScorchedEarth:
 	def fire_projectile(self):
 		velx = self.tanks[self.current_player].power * math.cos(math.radians(self.tanks[self.current_player].angle))
 		vely = -self.tanks[self.current_player].power * math.sin(math.radians(self.tanks[self.current_player].angle))
-		p = projectile.Projectile(Pos(self.tanks[self.current_player].turret_end.x, self.tanks[self.current_player].turret_end.y-TANK_SIZE) , Pos(velx, vely), self.tanks[self.current_player].color, 20, self.canvas)
+		p = projectile.Projectile(Pos(self.tanks[self.current_player].turret_end.x, self.tanks[self.current_player].turret_end.y-TANK_SIZE) , Pos(velx, vely), self.tanks[self.current_player].color, 60, self.canvas)
 		self.prev_seconds = time.time()
 		self.animate_projectile(p)
 
@@ -161,13 +161,16 @@ class ScorchedEarth:
 		draw = ImageDraw.Draw(self.terrain_image)
 		# Draw a filled circle to simulate the crater, filling it with sky color (assuming sky color is blue)
 		draw.ellipse((x - radius, y - radius, x + radius, y + radius), fill=(135, 206, 235))  # Assuming sky blue color
+		self.update_canvas()
 
-		# Update the canvas with the modified terrain
-		self.draw_terrain()
-		# for tank in self.tanks:
-		self.tanks[0] = self.spawn_tank(100, 'red')
 		for tank in self.tanks:
-			tank.draw()
+			# tank.draw()
+			x = tank.pos.x
+			y = tank.pos.y
+			while self.terrain_image.getpixel((x,y)) != TERRAIN_COLOR:
+				y += 1
+			tank.update_tank(Pos(x,y))
+
 	def update_canvas(self):
 		self.tk_image = ImageTk.PhotoImage(self.terrain_image)
 		self.canvas.create_image(0, 0, anchor=NW, image=self.tk_image)

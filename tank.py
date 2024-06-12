@@ -45,7 +45,7 @@ class Tank:
 		y1 = self.pos.y - self.size / 2
 		x2 = self.pos.x + self.size
 		y2 = self.pos.y + self.size / 2
-		self.canvas.coords(x1, y1, x2, y2)
+		self.canvas.coords(self.id,x1, y1, x2, y2)
 
 	def update_turret(self):
 		self.turret_end = Pos(*rotate(self.turret_base.x,self.turret_base.y, self.angle,self.turret_length))
