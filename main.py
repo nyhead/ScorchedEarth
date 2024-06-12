@@ -164,12 +164,15 @@ class ScorchedEarth:
 		self.update_canvas()
 
 		for tank in self.tanks:
+			self.drop_tanks(tank)
+
+	def drop_tanks(self, tank):
 			# tank.draw()
 			x = tank.pos.x
-			y = tank.pos.y
-			while self.terrain_image.getpixel((x,y)) != TERRAIN_COLOR:
-				y += 1
-			tank.update_tank(Pos(x,y))
+			y = tank.pos.y + 1
+			if self.terrain_image.getpixel((x, y)) != TERRAIN_COLOR:
+				tank.update_tank(Pos(x,y))
+				self.canvas.after(int(.05 * 100), self.drop_tanks, tank)
 
 	def update_canvas(self):
 		self.tk_image = ImageTk.PhotoImage(self.terrain_image)
