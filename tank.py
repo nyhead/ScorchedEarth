@@ -17,6 +17,8 @@ class Tank:
 		self.turret_end = Pos(*rotate(self.turret_base.x,self.turret_base.y, self.angle,self.turret_length))
 		self.power = 60
 		self.lives = 3
+		self.shots = 0
+		self.score = 0
 	def draw(self):
 		if self.id:
 			self.canvas.delete(self.id)
@@ -34,8 +36,8 @@ class Tank:
 
 
 	def rotate_turret(self, angle):
-		if (0 <= self.angle - angle <= 180):
-			self.angle -= angle
+		if (0 <= self.angle + angle <= 180):
+			self.angle += angle
 			self.update_turret()
 
 	def update_tank(self,tank_pos):
@@ -51,6 +53,9 @@ class Tank:
 	def update_turret(self):
 		self.turret_end = Pos(*rotate(self.turret_base.x,self.turret_base.y, self.angle,self.turret_length))
 		self.canvas.coords(self.turret, self.turret_base.x, self.turret_base.y, self.turret_end.x, self.turret_end.y)
+	def update_power(self, power):
+		if 0 <= self.power + power <= 100:
+			self.power += power
 	def fire_projectile(self):
 		velx = self.power * math.cos(math.radians(self.angle))
 		vely = -self.power * math.sin(math.radians(self.angle))
