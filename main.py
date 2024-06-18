@@ -49,12 +49,13 @@ class ScorchedEarth:
                                              width=20,
                                              height=2)
         self.hall_of_fame_button.grid(row=1, column=0, padx=10, pady=10)
-        self.scale_widget = tk.Scale(self.button_frame, from_=2, to=5, orient=tk.HORIZONTAL, command=self.set_num_tanks)
+        self.scale_widget = tk.Scale(self.button_frame, from_=2, to=4, orient=tk.HORIZONTAL, command=self.set_num_tanks)
         self.scale_widget.set(self.num_tanks)  # Set initial value
         self.scale_widget.grid(row=2, column=0, padx=10, pady=10)  # Center the slider
 
         self.trajectory_points = []
         self.projectile_active = False
+        self.colors = ['red', 'black', 'yellow', 'purple']
         # Hide the canvas initially
         self.canvas.pack_forget()
 
@@ -77,12 +78,22 @@ class ScorchedEarth:
         print("num_tanks", num_tanks)
         self.terrain_image = self.generate_terrain()
         self.draw_terrain()
-        tank1 = self.spawn_tank(100, "red")
-        tank2 = self.spawn_tank(2 * WORLD_WIDTH - 100, "purple")
-        self.tanks.append(tank1)
-        self.tanks.append(tank2)
+
+        # Calculate evenly spaced x positions for tanks
+        spacing = WIDTH // (num_tanks)
+        # spawn_positions = [50]
+        # spawn_positions += [(i * spacing) for i in range(1,num_tanks+1)]
+        spawn_positions = [(i * spacing + spacing//2) for i in range(0,num_tanks)]
+        spawn_positions[-1] += spacing // 4
+        spawn_positions[0] -= spacing // 4
+        self.tanks = []
+        for i in range(num_tanks):
+            tank = self.spawn_tank(spawn_positions[i], f"{self.colors[i]}")
+            self.tanks.append(tank)
+
         for tank in self.tanks:
             tank.draw()
+
         self.root.bind('<Up>', lambda event: self.control_power(dir=1))
         self.root.bind('<Down>', lambda event: self.control_power(dir=-1))
         self.root.bind('<Left>', lambda event: self.move_turret(dir=1))
@@ -122,20 +133,24 @@ class ScorchedEarth:
     def spawn_tank(self, spawn_x, color):
         # Find the exact altitude for the tank's base at the given spawn_x
         noise_value = pnoise1(spawn_x * NOISE_SCALE, octaves=OCTAVES)
+        base_altitude = int(map_value(noise_value, -1, 1, MIN_ALTITUDE, MAX_ALTITUDE))
 
-        base_altitude = int(map_value(noise_value, 0, 1, MIN_ALTITUDE, MAX_ALTITUDE))
-
-        # altitude = 0
+        # Adjust base altitude to ensure the tank is placed on the terrain
         while self.terrain_image.getpixel((spawn_x, base_altitude)) != TERRAIN_COLOR:
             base_altitude += 1  # The y-coordinate just above the terrain
+
         tank_y_position = int(base_altitude) - (TANK_SIZE // 2)
+
+        # Clear space for the tank
         for x in range(spawn_x - TANK_SIZE // 2, spawn_x + TANK_SIZE // 2):
             for y in range(tank_y_position, int(base_altitude)):
                 if 0 <= x < self.terrain_image.width and 0 <= y < self.terrain_image.height:
-                    self.terrain_image.putpixel((x, y), TERRAIN_COLOR)  # Clear the space for the tank
+                    self.terrain_image.putpixel((x, y), TERRAIN_COLOR)
+
+        return Tank(Pos(spawn_x, tank_y_position), color, self.canvas)
 
         # self.draw_terrain()
-        return Tank(Pos(spawn_x, tank_y_position), color, self.canvas)
+        # return Tank(Pos(spawn_x, tank_y_position), color, self.canvas)
 
     def move_turret(self, dir):
         self.tanks[self.current_player].rotate_turret(dir * 5)
