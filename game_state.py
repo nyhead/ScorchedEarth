@@ -1,7 +1,7 @@
 # Constants
 import math
 
-WIDTH = 1024
+WIDTH = 1920
 HEIGHT = 720
 SCALE_FACTOR = 2
 WORLD_WIDTH = WIDTH // SCALE_FACTOR

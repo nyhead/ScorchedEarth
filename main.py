@@ -79,16 +79,15 @@ class ScorchedEarth:
         self.terrain_image = self.generate_terrain()
         self.draw_terrain()
 
-        # Calculate evenly spaced x positions for tanks
-        spacing = WIDTH // (num_tanks)
-        # spawn_positions = [50]
-        # spawn_positions += [(i * spacing) for i in range(1,num_tanks+1)]
-        spawn_positions = [(i * spacing + spacing//2) for i in range(0,num_tanks)]
-        spawn_positions[-1] += spacing // 4
-        spawn_positions[0] -= spacing // 4
+        interval = WIDTH // (num_tanks + 1)  # Calculate the interval to space tanks evenly
+        spawn_positions = [i * interval for i in range(1, num_tanks + 1)]  # Generate positions
+        spawn_positions[0] -= interval//2
+        spawn_positions[-1] += interval // 2
+
         self.tanks = []
         for i in range(num_tanks):
-            tank = self.spawn_tank(spawn_positions[i], f"{self.colors[i]}")
+            tank_color = self.colors[i % len(self.colors)]  # Cycle through colors if there are more tanks than colors
+            tank = self.spawn_tank(spawn_positions[i], tank_color)
             self.tanks.append(tank)
 
         for tank in self.tanks:
