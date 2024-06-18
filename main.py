@@ -157,7 +157,7 @@ class ScorchedEarth:
             p = projectile.Projectile(
                 Pos(self.tanks[self.current_player].turret_end.x,
                     self.tanks[self.current_player].turret_end.y - TANK_SIZE),
-                Pos(velx, vely), self.tanks[self.current_player].color, 60, self.canvas)
+                Pos(velx, vely), self.tanks[self.current_player].color, 30, self.canvas)
             self.prev_seconds = time.time()
             self.trajectory_points = [(p.pos.x, p.pos.y)]  # Initialize the trajectory points list
             self.projectile_active = True
@@ -167,7 +167,7 @@ class ScorchedEarth:
 
     def animate_projectile(self, projectile):
         gravity = 9.8  # Acceleration due to gravity
-        time_interval = .05  # Time step for the simulation
+        time_interval = .05 # Time step for the simulation
 
         # Update horizontal position
         projectile.pos.x += projectile.vel.x * time_interval
@@ -236,6 +236,11 @@ class ScorchedEarth:
 
         for tank in self.tanks:
             self.drop_tanks(tank)
+
+        if len(self.tanks) == 1:
+            ui_text = f"{self.tanks[-1].color} won"
+            self.canvas.create_text(WORLD_WIDTH//2, WORLD_HEIGHT//2, text=ui_text, fill=self.tanks[-1].color,
+                                                      font=('Helvetica', '50', 'bold'), anchor='center')
 
     def drop_tanks(self, tank):
         x = tank.pos.x
