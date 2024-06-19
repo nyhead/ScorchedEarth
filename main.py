@@ -232,7 +232,7 @@ class ScorchedEarth:
         draw.ellipse((x - radius, y - radius, x + radius, y + radius), fill=(135, 206, 235))  # Assuming sky blue color
 
         for i, tank in enumerate(self.tanks):
-            if x - radius <= tank.pos.x <= x + radius:
+            if x - radius <= tank.pos.x <= x + radius and y-radius <= tank.pos.y <= y+radius:
                 tank.lives -= 1
                 if i != self.current_player:
                     shots = self.tanks[self.current_player].shots
