@@ -268,11 +268,12 @@ class ScorchedEarth:
 
     def update_canvas(self):
         self.tk_image = ImageTk.PhotoImage(self.terrain_image)
-        self.canvas.create_image(0, 0, anchor=NW, image=self.tk_image)
+        self.canvas.itemconfigure(tagOrId="terrain", image=self.tk_image)
 
         # Redraw the tanks and other objects to maintain their visibility
         for tank in self.tanks:
             tank.draw()
+        # pass
 
     def control_power(self, dir):
         self.tanks[self.current_player].update_power(dir * 10)
