@@ -92,7 +92,10 @@ class ScorchedEarth:
 
         for tank in self.tanks:
             tank.draw()
-
+        for tank in self.tanks:
+            self.canvas.tag_raise(tank.id)
+            self.canvas.tag_raise(tank.turret)
+            self.canvas.tag_raise(tank.ui_text_id)
         self.root.bind('<Up>', lambda event: self.control_power(dir=1))
         self.root.bind('<Down>', lambda event: self.control_power(dir=-1))
         self.root.bind('<Left>', lambda event: self.move_turret(dir=1))
@@ -202,7 +205,7 @@ class ScorchedEarth:
         # Draw the trajectory line
         if len(self.trajectory_points) > 1:
             self.canvas.create_line(self.trajectory_points[-2], self.trajectory_points[-1], fill=projectile.color,
-                                    width=2)
+                                    width=2, tags="line")
 
         if not (0 <= projectile.pos.x <= (WORLD_WIDTH * SCALE_FACTOR)):
             print(projectile.pos.x, projectile.pos.y)
@@ -211,7 +214,9 @@ class ScorchedEarth:
             print(projectile.pos.x, projectile.pos.y)
             projectile.vel.y *= -1
         elif self.check_collision(projectile):
+
             self.create_crater(projectile.pos.x, projectile.pos.y, projectile.explosion_radius)
+            self.canvas.delete("line")
             self.canvas.delete(projectile.projectile)
             self.projectile_active = False
             self.end_turn()
@@ -224,9 +229,7 @@ class ScorchedEarth:
         return False
 
     def create_crater(self, x, y, radius):
-        for tank in self.tanks:
-            self.canvas.delete(tank.id)
-            self.canvas.delete(tank.turret)
+
         draw = ImageDraw.Draw(self.terrain_image)
         # Draw a filled circle to simulate the crater, filling it with sky color (assuming sky color is blue)
         draw.ellipse((x - radius, y - radius, x + radius, y + radius), fill=(135, 206, 235))  # Assuming sky blue color
@@ -269,10 +272,9 @@ class ScorchedEarth:
     def update_canvas(self):
         self.tk_image = ImageTk.PhotoImage(self.terrain_image)
         self.canvas.itemconfigure(tagOrId="terrain", image=self.tk_image)
-
-        # Redraw the tanks and other objects to maintain their visibility
         for tank in self.tanks:
             tank.draw()
+        # Redraw the tanks and other objects to maintain their visibility
         # pass
 
     def control_power(self, dir):
