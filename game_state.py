@@ -25,12 +25,3 @@ def rotate(x, y, angle_degrees, turret_length):
     endy = y - turret_length * math.sin(angle_radians)
     return endx, endy
 # Enums for game state and projectile type
-class State:
-    AIM = 1
-    POWER = 2
-    RESOLVE = 3
-    GAME_OVER = 4
-
-class ProjectileType:
-    REGULAR = "Regular"
-    CLUSTER_BOMB = "Cluster"

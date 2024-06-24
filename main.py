@@ -8,7 +8,7 @@ from tank import *
 from PIL import Image, ImageTk, ImageDraw
 from noise import pnoise1, pnoise2
 from game_state import *
-
+from hall_of_fame import *
 
 def map_value(value, leftMin, leftMax, rightMin, rightMax):
     # Figure out how 'wide' each range is
@@ -26,10 +26,11 @@ class ScorchedEarth:
     def __init__(self, root):
         self.tanks = []
         self.num_tanks = 2
+        self.winner = ""
         self.root = root
         self.root = root
         self.root.geometry(f"{WIDTH}x{HEIGHT}")  # Set the size of the root window to match the canvas size
-
+        self.hol = HallOfFame()
         self.canvas = tk.Canvas(root, width=WIDTH, height=HEIGHT)
         self.canvas.pack()
         self.terrain_tk_image = None  # Keep a reference to the PhotoImage object
@@ -55,7 +56,7 @@ class ScorchedEarth:
 
         self.trajectory_points = []
         self.projectile_active = False
-        self.colors = ['red', 'black', 'yellow', 'purple']
+        self.colors = ['red', 'blue', 'orange', 'purple']
         # Hide the canvas initially
         self.canvas.pack_forget()
 
@@ -249,15 +250,37 @@ class ScorchedEarth:
             if tank.lives == 0:
                 self.tanks.remove(tank)
 
+                self.canvas.delete(tank.id)
+                self.canvas.delete(tank.turret)
+                self.canvas.delete(tank.ui_text_id)
+
         self.update_canvas()
 
         for tank in self.tanks:
             self.drop_tanks(tank)
 
         if len(self.tanks) == 1:
-            ui_text = f"{self.tanks[-1].color} won"
-            self.canvas.create_text(WORLD_WIDTH//2, WORLD_HEIGHT//2, text=ui_text, fill=self.tanks[-1].color,
-                                                      font=('Helvetica', '50', 'bold'), anchor='center')
+            self.show_winner_input(self.tanks[-1].color)
+            self.hol.update(self.winner, self.tanks[-1].score)
+            print(self.hol.limit)
+    def show_winner_input(self, color):
+        def submit_name():
+            self.winner = entry.get()
+            ui_text = f"{self.winner} ({color}) won"
+            self.canvas.create_text(WORLD_WIDTH // 2+10, WORLD_HEIGHT // 2, text=ui_text, fill=color,
+                                    font=('Helvetica', '30', 'bold'), anchor='center')
+            input_dialog.destroy()
+
+
+        input_dialog = tk.Toplevel(self.root)
+        input_dialog.title("Winner Name")
+        tk.Label(input_dialog, text="Type your name:").pack(padx=10, pady=10)
+        entry = tk.Entry(input_dialog)
+        entry.pack(padx=10, pady=10)
+        submit_button = tk.Button(input_dialog, text="Submit", command=submit_name)
+        submit_button.pack(padx=10, pady=10)
+        input_dialog.geometry("+%d+%d" % (self.root.winfo_x() + self.root.winfo_width() // 2,
+                                          self.root.winfo_y() + self.root.winfo_height() // 2))
 
     def drop_tanks(self, tank):
         x = tank.pos.x
