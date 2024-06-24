@@ -152,9 +152,6 @@ class ScorchedEarth:
 
         return Tank(Pos(spawn_x, tank_y_position), color, self.canvas)
 
-        # self.draw_terrain()
-        # return Tank(Pos(spawn_x, tank_y_position), color, self.canvas)
-
     def move_turret(self, dir):
         self.tanks[self.current_player].rotate_turret(dir * 5)
         self.tanks[self.current_player].update_ui()  # Update the UI elements
@@ -249,7 +246,7 @@ class ScorchedEarth:
                         self.tanks[self.current_player].score += 10
             if tank.lives == 0:
                 self.tanks.remove(tank)
-
+                self.num_tanks -= 1
                 self.canvas.delete(tank.id)
                 self.canvas.delete(tank.turret)
                 self.canvas.delete(tank.ui_text_id)
@@ -261,15 +258,19 @@ class ScorchedEarth:
 
         if len(self.tanks) == 1:
             self.show_winner_input(self.tanks[-1].color)
-            self.hol.update(self.winner, self.tanks[-1].score)
-            print(self.hol.limit)
+
+
     def show_winner_input(self, color):
         def submit_name():
-            self.winner = entry.get()
+            self.winner += entry.get()
             ui_text = f"{self.winner} ({color}) won"
-            self.canvas.create_text(WORLD_WIDTH // 2+10, WORLD_HEIGHT // 2, text=ui_text, fill=color,
+            self.canvas.create_text(WORLD_WIDTH // 2 + 10, WORLD_HEIGHT // 2, text=ui_text, fill=color,
                                     font=('Helvetica', '30', 'bold'), anchor='center')
             input_dialog.destroy()
+
+            self.hol.update(self.winner, self.tanks[-1].score)
+            print(self.hol.hall)
+            print(self.hol.name_to_score)
 
 
         input_dialog = tk.Toplevel(self.root)
@@ -281,6 +282,7 @@ class ScorchedEarth:
         submit_button.pack(padx=10, pady=10)
         input_dialog.geometry("+%d+%d" % (self.root.winfo_x() + self.root.winfo_width() // 2,
                                           self.root.winfo_y() + self.root.winfo_height() // 2))
+
 
     def drop_tanks(self, tank):
         x = tank.pos.x
