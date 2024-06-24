@@ -9,6 +9,7 @@ from PIL import Image, ImageTk, ImageDraw
 from noise import pnoise1, pnoise2
 from game_state import *
 from hall_of_fame import *
+import pickle
 
 def map_value(value, leftMin, leftMax, rightMin, rightMax):
     # Figure out how 'wide' each range is
@@ -35,7 +36,12 @@ class ScorchedEarth:
         self.canvas.pack()
         self.terrain_tk_image = None  # Keep a reference to the PhotoImage object
         self.current_player = 0
-
+        # Load hall of fame from file
+        try:
+            with open("hall_of_fame_record.pkl", "rb") as file:
+                self.hol = pickle.load(file)
+        except FileNotFoundError:
+            self.hol = HallOfFame()
         self.scale_widget = None
         # Create Play button
         self.button_frame = tk.Frame(root)
@@ -61,7 +67,15 @@ class ScorchedEarth:
         self.canvas.pack_forget()
 
     def show_hall_of_fame(self):
-        pass
+        hall_of_fame_window = tk.Toplevel(self.root)
+        hall_of_fame_window.title("Hall of Fame")
+        hall_of_fame_window.geometry("300x400")
+
+        hall_of_fame_label = tk.Label(hall_of_fame_window, text="Hall of Fame", font=('Helvetica', '20', 'bold'))
+        hall_of_fame_label.pack(pady=10)
+
+        for i, (score, name) in enumerate(sorted(self.hol.hall, reverse=True), start=1):
+            tk.Label(hall_of_fame_window, text=f"{i}. {name}: {score}").pack()
 
     def set_num_tanks(self, value):
         # Update the number of tanks based on the slider's value
@@ -271,7 +285,8 @@ class ScorchedEarth:
             self.hol.update(self.winner, self.tanks[-1].score)
             print(self.hol.hall)
             print(self.hol.name_to_score)
-
+            with open("hall_of_fame_record.pkl", "wb") as file:
+                pickle.dump(self.hol, file)
 
         input_dialog = tk.Toplevel(self.root)
         input_dialog.title("Winner Name")
