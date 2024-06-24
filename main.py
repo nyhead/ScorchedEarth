@@ -166,7 +166,6 @@ class ScorchedEarth:
         self.ui.canvas.after(int(time_interval * 100), self.animate_projectile, projectile)
 
     def check_collision(self, projectile):
-        print(projectile.pos.x, projectile.pos.y)
         if self.terrain_image.getpixel((projectile.pos.x, projectile.pos.y)) == TERRAIN_COLOR:
             return True
         return False
