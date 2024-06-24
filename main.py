@@ -9,6 +9,7 @@ from projectile import Projectile
 from ui import GameUI
 from util import *
 from hall_of_fame import *
+import opensimplex
 class ScorchedEarth:
     def __init__(self, root):
         self.root = root
@@ -51,18 +52,19 @@ class ScorchedEarth:
     def generate_terrain(self):
         # Generate terrain using Perlin noise
         terrain = Image.new("RGB", (WORLD_WIDTH, WORLD_HEIGHT))
-        seed = random.randint(0, 10000) # Add randomness with a seed
+        tiny_noise = random.randint(0, 10000) # Add a bit more noise
         for x in range(WORLD_WIDTH):
             altitude = 0
             amplitude = 1
             frequency = NOISE_SCALE
             # Layer multiple frequencies of noise
             for _ in range(5):
-                altitude += amplitude * pnoise1(x * frequency + seed) # 5 layers of noise
+                altitude += amplitude * opensimplex.noise2(x * frequency + tiny_noise, 0) # 5 layers of noise
                 amplitude *= 0.5
                 frequency *= 2
             altitude = map_value(altitude, -1, 1, MIN_ALTITUDE, MAX_ALTITUDE)
             for y in range(WORLD_HEIGHT):
+
                 if y > altitude:
                     terrain.putpixel((x, y), TERRAIN_COLOR)
                 else:
@@ -97,9 +99,7 @@ class ScorchedEarth:
         self.ui.bind_keys(self.control_power, self.move_turret, self.fire_projectile)
 
     def spawn_tank(self, spawn_x, color):
-        # Find the exact altitude for the tank's base at the given spawn_x
-        noise_value = pnoise1(spawn_x * NOISE_SCALE, octaves=OCTAVES)
-        base_altitude = int(map_value(noise_value, -1, 1, MIN_ALTITUDE, MAX_ALTITUDE))
+        base_altitude = 0
         # Adjust base altitude to ensure the tank is placed on the terrain
         while self.terrain_image.getpixel((spawn_x, base_altitude)) != TERRAIN_COLOR:
             base_altitude += 1 # The y-coordinate just above the terrain
