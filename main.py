@@ -1,14 +1,12 @@
 import random
-import time
 import tkinter as tk
 from PIL import Image, ImageTk, ImageDraw
-from noise import pnoise1
 import pickle
 from tank import Tank
 from projectile import Projectile
 from ui import GameUI
 from util import *
-from hall_of_fame import *
+from hall_of_fame import HallOfFame
 import opensimplex
 class ScorchedEarth:
     def __init__(self, root):
