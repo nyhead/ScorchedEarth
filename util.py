@@ -14,6 +14,7 @@ TERRAIN_COLOR = (30, 180, 60)
 SKY_COLOR = (136, 206, 235)
 MIN_ALTITUDE = .4 * WORLD_HEIGHT
 MAX_ALTITUDE = .8 * WORLD_HEIGHT
+CRATER_SIZE = 40
 class Pos:
     def __init__(self,x,y):
         self.x = x

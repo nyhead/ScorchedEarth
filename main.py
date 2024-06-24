@@ -127,7 +127,7 @@ class ScorchedEarth:
             velx = self.tanks[self.current_player].power * math.cos(math.radians(self.tanks[self.current_player].angle))
             vely = -self.tanks[self.current_player].power * math.sin(math.radians(self.tanks[self.current_player].angle))
             p = Projectile(Pos(self.tanks[self.current_player].turret_end.x, self.tanks[self.current_player].turret_end.y - TANK_SIZE),
-                           Pos(velx, vely), self.tanks[self.current_player].color, 30, self.ui.canvas)
+                           Pos(velx, vely), self.tanks[self.current_player].color, CRATER_SIZE, self.ui.canvas)
             self.trajectory_points = [(p.pos.x, p.pos.y)] # Initialize the trajectory points list
             self.projectile_active = True
             self.tanks[self.current_player].shots += 1 # update number of shots
