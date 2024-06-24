@@ -7,8 +7,12 @@ class GameUI:
         self.start_game_callback = start_game_callback
         self.show_hall_of_fame_callback = show_hall_of_fame_callback
         self.set_num_tanks_callback = set_num_tanks_callback
+
+        # Create the main canvas
         self.canvas = tk.Canvas(root, width=WIDTH, height=HEIGHT)
         self.canvas.pack()
+
+        # Create the button frame and buttons
         self.button_frame = tk.Frame(root)
         self.play_button = tk.Button(self.button_frame, text="Play", command=self.start_game, width=20, height=2)
         self.play_button.grid(row=0, column=0, padx=10, pady=10)
@@ -20,6 +24,7 @@ class GameUI:
         self.button_frame.place(relx=0.5, rely=0.5, anchor='center')
 
     def start_game(self):
+        # Start the game and hide the button frame
         self.scale_widget.destroy()
         self.button_frame.destroy()
         self.canvas.pack()
@@ -35,6 +40,7 @@ class GameUI:
         self.canvas.create_image(0, 0, anchor=NW, image=image, tags="terrain")
 
     def bind_keys(self, control_power, move_turret, fire_projectile):
+        # Bind keys for controlling the tank and firing projectiles
         self.root.bind('<Up>', lambda event: control_power(1))
         self.root.bind('<Down>', lambda event: control_power(-1))
         self.root.bind('<Left>', lambda event: move_turret(1))

@@ -22,6 +22,7 @@ class Tank:
         self.ui_text_id = None  # UI text ID for updating
 
     def draw(self):
+        # Draw the tank and its turret on the canvas
         if self.id:
             self.canvas.delete(self.id)
         if self.turret:
@@ -47,11 +48,13 @@ class Tank:
         self.draw_ui()
 
     def rotate_turret(self, angle):
+        # Rotate the turret by the specified angle
         if 0 <= self.angle + angle <= 180:
             self.angle += angle
             self.update_turret()
 
     def update_tank(self, tank_pos):
+        # Update the tank's position and redraw it
         self.pos = tank_pos
         self.turret_base = Pos(self.pos.x, self.pos.y - TANK_SIZE / 2)
         self.update_turret()
@@ -62,15 +65,12 @@ class Tank:
         self.canvas.coords(self.id, x1, y1, x2, y2)
 
     def update_turret(self):
+        # Update the turret's position
         self.turret_end = Pos(*rotate(self.turret_base.x, self.turret_base.y, self.angle, self.turret_length))
         self.canvas.coords(self.turret, self.turret_base.x, self.turret_base.y, self.turret_end.x, self.turret_end.y)
 
     def update_power(self, power):
+        # Update the power of the tank's shot
         if 0 <= self.power + power <= 100:
             self.power += power
 
-    def fire_projectile(self):
-        velx = self.power * math.cos(math.radians(self.angle))
-        vely = -self.power * math.sin(math.radians(self.angle))
-        p = projectile.Projectile(Pos(self.turret_end.x, self.turret_end.y - TANK_SIZE), Pos(velx, vely), self.color, 20, self.canvas)
-        return p

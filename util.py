@@ -1,8 +1,8 @@
 # Constants
 import math
 
-WIDTH = 800
-HEIGHT = 600
+WIDTH = 1024
+HEIGHT = 720
 SCALE_FACTOR = 2
 WORLD_WIDTH = WIDTH // SCALE_FACTOR
 WORLD_HEIGHT = HEIGHT // SCALE_FACTOR
@@ -34,4 +34,3 @@ def rotate(x, y, angle_degrees, turret_length):
     endx = x + turret_length * math.cos(angle_radians)
     endy = y - turret_length * math.sin(angle_radians)
     return endx, endy
-# Enums for game state and projectile type

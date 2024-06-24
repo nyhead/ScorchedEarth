@@ -14,6 +14,7 @@ class Projectile:
 		self.draw()
 
 	def draw(self):
+		# Draw the projectile on the canvas
 		if self.projectile is None:
 			self.canvas.delete(self.projectile)
 

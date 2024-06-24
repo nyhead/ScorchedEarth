@@ -23,6 +23,7 @@ class ScorchedEarth:
         self.terrain_tk_image = None
 
     def load_hall_of_fame(self):
+        # Load hall of fame records from file, or create a new one if not found
         try:
             with open("hall_of_fame_record.pkl", "rb") as file:
                 return pickle.load(file)
@@ -30,6 +31,7 @@ class ScorchedEarth:
             return HallOfFame()
 
     def show_hall_of_fame(self):
+        # Display the hall of fame window
         hall_of_fame_window = tk.Toplevel(self.root)
         hall_of_fame_window.title("Hall of Fame")
         hall_of_fame_window.geometry("300x400")
@@ -47,6 +49,7 @@ class ScorchedEarth:
         self.bind_controls()
 
     def generate_terrain(self):
+        # Generate terrain using Perlin noise
         terrain = Image.new("RGB", (WORLD_WIDTH, WORLD_HEIGHT))
         seed = random.randint(0, 10000) # Add randomness with a seed
         for x in range(WORLD_WIDTH):
@@ -110,22 +113,26 @@ class ScorchedEarth:
         return Tank(Pos(spawn_x, tank_y_position), color, self.ui.canvas)
 
     def control_power(self, dir):
+        # Control the power of the tank's shot
         self.tanks[self.current_player].update_power(dir * 10)
         self.tanks[self.current_player].update_ui()
 
     def move_turret(self, dir):
+        # Rotate the tank's turret
         self.tanks[self.current_player].rotate_turret(dir * 5)
         self.tanks[self.current_player].update_ui()
 
     def fire_projectile(self):
+        # Fire a projectile from the current tank
         if not self.projectile_active:
+            #set initial horizontal and vertical velocities
             velx = self.tanks[self.current_player].power * math.cos(math.radians(self.tanks[self.current_player].angle))
             vely = -self.tanks[self.current_player].power * math.sin(math.radians(self.tanks[self.current_player].angle))
             p = Projectile(Pos(self.tanks[self.current_player].turret_end.x, self.tanks[self.current_player].turret_end.y - TANK_SIZE),
                            Pos(velx, vely), self.tanks[self.current_player].color, 30, self.ui.canvas)
             self.trajectory_points = [(p.pos.x, p.pos.y)] # Initialize the trajectory points list
             self.projectile_active = True
-            self.tanks[self.current_player].shots += 1
+            self.tanks[self.current_player].shots += 1 # update number of shots
             self.animate_projectile(p)
 
     def animate_projectile(self, projectile):
@@ -196,6 +203,7 @@ class ScorchedEarth:
             self.ui.show_winner_input(self.submit_winner_name)
 
     def submit_winner_name(self, name, dialog):
+        # Submit the winner's name and update the hall of fame
         self.ui.display_winner(name, self.tanks[-1].color)
         dialog.destroy()
         self.hol.update(name, self.tanks[-1].score)
@@ -218,6 +226,7 @@ class ScorchedEarth:
         for tank in self.tanks:
             tank.draw()
     def end_turn(self):
+        # End the current player's turn and switch to the next player
         self.current_player = (self.current_player + 1) % len(self.tanks)
         self.tanks[self.current_player].update_ui()
 
