@@ -1,5 +1,5 @@
 import math
-from game_state import *
+from util import *
 import projectile
 
 
@@ -15,7 +15,7 @@ class Tank:
         self.turret = None
         self.turret_base = Pos(self.pos.x, self.pos.y - TANK_SIZE / 2)
         self.turret_end = Pos(*rotate(self.turret_base.x, self.turret_base.y, self.angle, self.turret_length))
-        self.power = 10
+        self.power = 0
         self.lives = 1
         self.shots = 0
         self.score = 0

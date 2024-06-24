@@ -1,5 +1,5 @@
 import math
-from game_state import *
+from util import *
 class Projectile:
 	def __init__(self, pos,vel,col,explosion_radius,canvas):
 		self.pos = pos

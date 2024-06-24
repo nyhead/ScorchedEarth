@@ -1,8 +1,8 @@
 # Constants
 import math
 
-WIDTH = 1024
-HEIGHT = 720
+WIDTH = 800
+HEIGHT = 600
 SCALE_FACTOR = 2
 WORLD_WIDTH = WIDTH // SCALE_FACTOR
 WORLD_HEIGHT = HEIGHT // SCALE_FACTOR
@@ -18,6 +18,16 @@ class Pos:
         self.x = x
         self.y = y
 
+def map_value(value, leftMin, leftMax, rightMin, rightMax):
+    # Figure out how 'wide' each range is
+    leftSpan = leftMax - leftMin
+    rightSpan = rightMax - rightMin
+
+    # Convert the left range into a 0-1 range (float)
+    valueScaled = float(value - leftMin) / float(leftSpan)
+
+    # Convert the 0-1 range into a value in the right range.
+    return rightMin + (valueScaled * rightSpan)
 
 def rotate(x, y, angle_degrees, turret_length):
     angle_radians = angle_degrees * math.pi / 180
