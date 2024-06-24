@@ -23,7 +23,7 @@ they get 50 and 25 points respectively. Otherwise, just 10 points. The winner ge
 
 # 4. Usage
 
-Make sure requirements are fullfilled:
+Make sure tkinter is installed and pip packages are fullfilled:
 ```
 pip install -r requirements.txt
 ```
