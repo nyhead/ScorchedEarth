@@ -66,7 +66,7 @@ class ScorchedEarth:
                 if y > altitude:
                     terrain.putpixel((x, y), TERRAIN_COLOR)
                 else:
-                    terrain.putpixel((x, y), (136, 206, 235))
+                    terrain.putpixel((x, y), SKY_COLOR)
         return terrain
 
     def draw_terrain(self):
@@ -124,7 +124,7 @@ class ScorchedEarth:
 
     def fire_projectile(self):
         # Fire a projectile from the current tank
-        if not self.projectile_active:
+        if not self.projectile_active and self.num_tanks > 1:
             #set initial horizontal and vertical velocities
             velx = self.tanks[self.current_player].power * math.cos(math.radians(self.tanks[self.current_player].angle))
             vely = -self.tanks[self.current_player].power * math.sin(math.radians(self.tanks[self.current_player].angle))
@@ -176,7 +176,7 @@ class ScorchedEarth:
     def create_crater(self, x, y, radius):
         draw = ImageDraw.Draw(self.terrain_image)
         # Draw a filled circle to simulate the crater, filling it with sky color
-        draw.ellipse((x - radius, y - radius, x + radius, y + radius), fill=(135, 206, 235))
+        draw.ellipse((x - radius, y - radius, x + radius, y + radius), fill=SKY_COLOR)
         for i, tank in enumerate(self.tanks):
             if x - radius <= tank.pos.x <= x + radius and y - radius <= tank.pos.y <= y + radius:
                 tank.lives -= 1
@@ -184,9 +184,9 @@ class ScorchedEarth:
                     shots = self.tanks[self.current_player].shots
                     # if tank managed to hit an opponent on nth attempt, aims to award accuracy
                     if shots == 1:
-                        self.tanks[self.current_player].score += 20
+                        self.tanks[self.current_player].score += 50
                     elif shots == 2:
-                        self.tanks[self.current_player].score += 15
+                        self.tanks[self.current_player].score += 25
                     else:
                         self.tanks[self.current_player].score += 10
             if tank.lives == 0:
